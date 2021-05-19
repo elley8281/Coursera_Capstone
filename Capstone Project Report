@@ -27,5 +27,7 @@ Discussion
 
 This model could be improved by including information such as price point in the clustering. This could improve the usability to businesses as the output would reflect better the situations of the places nearby.
 
-Conclusion section where you conclude the report.
+Conclusion
+
+In conclusion, this model suceeds at showing a difference between central and surburban areas and the types of food places present in each. It provides an exploratory tool for businesses to understand current food venue provision in the city and could be improved through the addition of price data. The code is adaptable to being used for other areas.
 
