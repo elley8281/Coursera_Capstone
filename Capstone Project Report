@@ -1,7 +1,31 @@
-A full report consisting of all of the following components (15 marks):
-Introduction where you discuss the business problem and who would be interested in this project.
-Data where you describe the data that will be used to solve the problem and the source of the data.
-Methodology section which represents the main component of the report where you discuss and describe any exploratory data analysis that you did, any inferential statistical testing that you performed, if any, and what machine learnings were used and why.
-Results section where you discuss the results.
-Discussion section where you discuss any observations you noted and any recommendations you can make based on the results.
+Introduction:
+
+Edinburgh, like many other cities, has a lively food scene and many small chains of restaurants and takeaways have found their home here. Many of these restaurants are expanding their businesses into new areas of the city. As they are small chains, every new location choice is a business risk. This project focused on developing a K-means model to group natural neighbourhoods of the city into clusters based on two factors: the most common types of food venue in an area and the density of food venues in an area. The idea behind this is that businesses would be able to see which areas were similar to their current areas of success and which were very different. This could provide a useful first step in generating ideas for new locations and help to show trends across the city. 
+
+Data
+
+The following data were used to help find the most similar neighbourhoods:
+- Segmentation via natural neighbourhoods. A GeoJSON file is available here https://opendata.arcgis.com/datasets/4082b44746eb4da8b5935be2d3a00185_27.geojson which is published by the city council. I chose to use natural neighbourhoods to represent the definition between areas that is felt by residents, who are the main clients of many food venues within the city, especially outside of the central area.
+- Density of restaurants in the neighbourhood, calculated from Foursquare location data and the areas in the GeoJSON file above.
+- Types of restaurant in the neighbourhood, from Foursquare location data.
+
+The initial plan for this project was to also use the presence of other types of venues in the neighbourhood, from Foursquare location data. This was decided against because when only the results from the food venues were used to generate the final map, it became clear that the model's use case would be more suited to being an exploratory tool for business owners in the earlier stages of planning. If other venues were also used, the data would have become less transparent and the model would therefore be less useful.
+
+Methodology
+
+Initially all venues in Edinburgh were plotted on the map to determine any patterns in distribution. The map was segmented using the natural neighbourhoods GeoJSON file. The centre of each neighbourhood was found. The foursquare API was used to find all food venues within a certain radius of this. Setting the value of the radius was not straightforwards. The radius used was twice the radius of the circle with the same area as the neighbourhood. It was judged that this would provide a reasonably-sized search area, which would include almost all of the venues required, whilst not being wildly too big. The next decision made was to determine how important it would be to split venues carefully by neighbourhood boundary rather than by selecting a representative sample within a certain radius of the centroid of each shape. It quickly became clear that using a representative sample was not a viable option as the shapes of the neighbourhoods were too irregular and the density of venues in a small region was not high enough to provide an adequate sample size. Therefore an algorithm was written to check which neighbourhood each venue was within and to delete duplicate entries that were listed in the wrong neighbourhood. This might seem like a clumsy method at first glance, when you could just do an API call for the whole of Edinburgh, however the limtit for returned results per call is 50 and if this code were to be applied to multiple cities, which is a possibility, then you would not want to be searching oer all of the space between the cities. This step is computationally expensive compared to the rest of the notebook, however it does not have to be repeated more than once to use the notebook.
+
+Once a dataframe containing venues and neighbourhoods had been created, the data was mapped to check it made sense. Next the onehot technique was used followed by taking a mean of these values, which resulted in a proportion of the total venues for each type of venue for each neighbourhood. The data was then sorted to give the most common venues in each neighbourhood.
+
+Separately, the frequency with which venue categories were found was calculated and only columns mentioned more than 3 times were used. The aim of this was to prevent area similarities being affected by anomalous categories. The proportion of the total venues for each type of venue for each neighbourhood was used as input for k-means clustering. The results were displayed on a map to show which areas had the most similar distributions of food chains to one another.
+
+Results
+
+The results show that in general there are different distributions of food venues nearer to the centre of Edinburgh, compared to in the suburbs. Some trends can be seen in terms of proximity to shopping centres and large shops. This suggests to me that the algorithm is starting to work, but that it might work better if different features were used.
+
+Discussion
+
+This model could be improved by including information such as price point in the clustering. This could improve the usability to businesses as the output would reflect better the situations of the places nearby.
+
 Conclusion section where you conclude the report.
+
